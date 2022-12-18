@@ -18,7 +18,7 @@ class ArticleController extends Controller
         if ($request->has("nom")){
         return $products->where('nom',$request->get("nom"))->get();
     }
-        return  Article::all();
+        return  Article::orderBy('id', 'DESC')->get();
 
 
     }
