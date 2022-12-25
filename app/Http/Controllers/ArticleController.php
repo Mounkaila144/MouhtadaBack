@@ -37,8 +37,6 @@ class ArticleController extends Controller
             'prixAchat' => 'required',
             'prixVente' => 'required',
             'stock' => 'required',
-            'vendue' => 'required',
-            'content' => 'required|min:50',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
         $imageName = time() . '.' . $request->file('image')->extension();
