@@ -118,5 +118,28 @@ class ArticleController extends Controller
             return response()->json("eureur");
         return response()->json(null);
     }
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Article  $product
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function removeAll(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $data=$request->input(["data"]);
+
+        $d=[];
+        foreach ($data as $id){
+            $d[]=Article::findOrFail($id);
+        }
+
+        foreach ($d as $Article){
+            if($Article) {
+                Storage::delete('public/Article/' . $Article->image);
+                $Article->delete();
+            }
+        }
+            return response()->json("sucess");
+    }
 
 }

@@ -26,6 +26,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/me', [AuthController::class, 'me'])->middleware('auth:sanctum');
+Route::post('articles/remove', [ArticleController::class, 'removeAll']);
 
 Route::middleware('api')->group(function () {
     Route::resource('articles', ArticleController::class);
