@@ -86,7 +86,7 @@ class ArticleController extends Controller
             $imageName = time() . '.' . $request->file('image')->extension();
             $request->file('image')->storeAs('public/Article', $imageName);
             if ($product->image) {
-                Storage::delete('public/Article/' . $product->image);
+                Storage::delete('public/meuble/' . $product->image);
             }
             $data["image"]=$imageName;
         }
@@ -111,7 +111,7 @@ class ArticleController extends Controller
 
         $Article = Article::findOrFail($id);
         if($Article) {
-            Storage::delete('public/Article/' . $Article->image);
+            Storage::delete('public/meuble/' . $Article->image);
             $Article->delete();
         }
         else
@@ -135,7 +135,7 @@ class ArticleController extends Controller
 
         foreach ($d as $Article){
             if($Article) {
-                Storage::delete('public/Article/' . $Article->image);
+                Storage::delete('public/meuble/' . $Article->image);
                 $Article->delete();
             }
         }
