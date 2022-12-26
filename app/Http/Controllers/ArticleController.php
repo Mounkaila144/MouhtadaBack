@@ -41,7 +41,7 @@ class ArticleController extends Controller
         ]);
         $imageName = time() . '.' . $request->file('image')->extension();
         // $request->image->move(public_path('images'), $imageName);
-        $request->file('image')->storeAs('public/Article', $imageName);
+        $request->file('image')->storeAs('public/meuble', $imageName);
 
         $save = new Article();
         $save->image =$imageName;
@@ -84,7 +84,7 @@ class ArticleController extends Controller
         $imageName = '';
         if ($request->hasFile('image')) {
             $imageName = time() . '.' . $request->file('image')->extension();
-            $request->file('image')->storeAs('public/Article', $imageName);
+            $request->file('image')->storeAs('public/meuble', $imageName);
             if ($product->image) {
                 Storage::delete('public/meuble/' . $product->image);
             }
