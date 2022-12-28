@@ -17,7 +17,9 @@ class ArticleController extends Controller
     {
         $products=$products->newQuery();
         if ($request->has("nom")){
-        return $products->where('nom',$request->get("nom"))->get();
+        return $products
+            ->where('nom', 'LIKE', "%{$request->get("nom")}%")
+            ->get();
     }
         return  Article::orderBy('id', 'ASC')->get();
 
