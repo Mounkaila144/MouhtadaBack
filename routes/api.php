@@ -4,6 +4,7 @@ use App\Http\Controllers\AjouteController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EntresortiController;
+use App\Http\Controllers\FactureController;
 use App\Http\Controllers\VenteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -27,16 +28,12 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 Route::post('articles/remove', [ArticleController::class, 'removeAll']);
+Route::post('articles/stocks/{id}', [ArticleController::class,"stocks"]);
 
 Route::middleware('api')->group(function () {
     Route::resource('articles', ArticleController::class);
-});
-Route::middleware('api')->group(function () {
     Route::resource('ajoutes', AjouteController::class);
-});
-Route::middleware('api')->group(function () {
     Route::resource('ventes', VenteController::class);
-});
-Route::middleware('api')->group(function () {
+    Route::resource('factures', FactureController::class);
     Route::resource('entresorties', EntresortiController::class);
 });

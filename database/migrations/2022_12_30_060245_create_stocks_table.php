@@ -14,9 +14,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('ajoutes', function (Blueprint $table) {
+        Schema::create('stocks', function (Blueprint $table) {
             $table->id();
-            $table->json('contenue');
+            $table->integer('identifiant');
+            $table->string('nom');
+            $table->string('type');
+            $table->integer('quantite')->nullable();
+            $table->integer('prixAchat')->nullable();
+            $table->integer('prixVente')->nullable();
             $table->foreignIdFor(User::class);
             $table->timestamps();
         });
@@ -29,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ajoutes');
+        Schema::dropIfExists('stocks');
     }
 };

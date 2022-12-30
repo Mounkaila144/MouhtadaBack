@@ -10,8 +10,9 @@ class Vente extends Model
     use HasFactory;
     protected $fillable = [
         'nom',
-        'prenom',
-        'contenue',
+        'prix',
+        'quantite',
+        'identifiant',
         'user_id'
     ];
 }

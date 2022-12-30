@@ -14,13 +14,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('ventes', function (Blueprint $table) {
+        Schema::create('factures', function (Blueprint $table) {
             $table->id();
-            $table->integer('identifiant');
             $table->string('nom');
-            $table->integer('prixAchat');
-            $table->integer('prixVente');
-            $table->integer('quantite');
+            $table->string('prenom');
+            $table->string('adresse');
+            $table->json('contenue');
             $table->foreignIdFor(User::class);
             $table->timestamps();
         });
@@ -33,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ventes');
+        Schema::dropIfExists('factures');
     }
 };

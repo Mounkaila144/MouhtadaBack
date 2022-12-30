@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\Stock;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -13,15 +15,16 @@ class ArticleController extends Controller
      *
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function index(Request $request ,Article $products)
+    public function index(Request $request, Article $products)
     {
-        $products=$products->newQuery();
-        if ($request->has("nom")){
-        return $products
-            ->where('nom', 'LIKE', "%{$request->get("nom")}%")
-            ->get();
-    }
-        return  Article::orderBy('id', 'ASC')->get();
+        $products = $products->newQuery();
+        if ($request->has("nom")) {
+            return $products
+                ->where('nom', 'LIKE', "%{$request->get("nom")}%")
+                ->where("stock", ">", 0)
+                ->get();
+        }
+        return Article::orderBy('id', 'ASC')->get();
 
 
     }
@@ -46,33 +49,89 @@ class ArticleController extends Controller
         $request->file('image')->storeAs('public/meuble', $imageName);
 
         $save = new Article();
-        $save->image =$imageName;
-        $save->nom =$request->input(["nom"]);
-        $save->prixAchat =(int)$request->get('prixAchat');
-        $save->prixVente =(int)$request->get('prixVente');
-        $save->stock =(int)$request->get('stock');
-        $save->vendue =(int)$request->get('vendue');
+        $save->image = $imageName;
+        $save->nom = $request->input(["nom"]);
+        $save->prixAchat = (int)$request->get('prixAchat');
+        $save->prixVente = (int)$request->get('prixVente');
+        $save->stock = (int)$request->get('stock');
+        $save->vendue = 0;
+        $save->vendue = (int)$request->get('vendue');
         $save->save();
 
-        Return response()->json($save);
+        return response()->json($save);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Article  $product
+     * @param \App\Models\Article $product
      * @return \Illuminate\Http\JsonResponse
      */
     public function show($id)
     {
-        $Article= Article::find($id);
+        $Article = Article::find($id);
 
-        Return response()->json($Article);
+        return response()->json($Article);
     }
+
+    public function stocks($id, Request $request)
+    {
+        $Article = Article::find($id);
+        if ($request->has('add')) {
+            if ($request->input(["add"]) > 0) {
+                $Article->update(["stock" => $Article->stock + $request->input(["add"])]);
+                $stock = new Stock();
+                $stock->type = "add";
+                $stock->identifiant = $Article->id;
+                $stock->quantite = $request->input(["add"]);
+                $stock->nom = $Article->nom;
+                $stock->user_id = 1;
+                $stock->save();
+                return response()->json($Article);
+            } else {
+                throw new Exception("Database error");
+            }
+        } else if ($request->has('remove')) {
+            if ($request->input(["remove"]) > 0 and $Article->stock >= $request->input(["remove"])) {
+                $Article->update(["stock" => $Article->stock - $request->input(["remove"])]);
+                $stock = new Stock();
+                $stock->type = "remove";
+                $stock->identifiant = $Article->id;
+                $stock->quantite = $request->input(["remove"]);
+                $stock->nom = $Article->nom;
+                $stock->user_id = 1;
+                $stock->save();
+                return response()->json($Article);
+            } else {
+                throw new Exception("Database error");
+            }
+        } else if ($request->has('prixAchat') and $request->has('prixVente')) {
+            if ($request->input(["prixAchat"]) >=0 and $request->input(["prixVente"])>=0) {
+                $Article->update(["prixAchat" => $request->input(["prixAchat"]),"prixVente" => $request->input(["prixVente"])]);
+                $stock = new Stock();
+                $stock->type = "prix";
+                $stock->identifiant = $Article->id;
+                $stock->nom = $Article->nom;
+                $stock->prixAchat = $request->input(["prixAchat"]);
+                $stock->prixVente = $request->input(["prixVente"]);
+                $stock->user_id = 1;
+                $stock->save();
+                return response()->json($Article);
+            } else {
+                throw new Exception("Database error");
+            }
+        } else {
+            throw new Exception("Database error");
+        }
+
+
+    }
+
     public function edit(Article $post)
     {
         //
     }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -82,7 +141,7 @@ class ArticleController extends Controller
     public function update(Request $request, $id)
     {
         $product = Article::findOrFail($id);
-        $data=[];
+        $data = [];
         $imageName = '';
         if ($request->hasFile('image')) {
             $imageName = time() . '.' . $request->file('image')->extension();
@@ -90,58 +149,61 @@ class ArticleController extends Controller
             if ($product->image) {
                 Storage::delete('public/meuble/' . $product->image);
             }
-            $data["image"]=$imageName;
+            $data["image"] = $imageName;
         }
 
-        $request->has('nom') ? $data["nom"]= $request->input(["nom"]) : null;
-        $request->has('vendue') ? $data['vendue']= $request->input(["vendue"]) : null;
-        $request->has('stock') ? $data['stock']= $request->input(["stock"]) : null;
-        $request->has('prixVente') ? $data['prixVente']= $request->input(["prixVente"]) : null;
-        $request->has('prixAchat') ? $data['prixAchat']= $request->input(["prixAchat"]) : null;
+        $request->has('nom') ? $data["nom"] = $request->input(["nom"]) : null;
+        $request->has('prixVente') ? $data['prixVente'] = $request->input(["prixVente"]) : null;
+        $request->has('prixAchat') ? $data['prixAchat'] = $request->input(["prixAchat"]) : null;
         $product->update($data);
-            return response()->json($product);
+        return response()->json($product);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Article  $product
+     * @param \App\Models\Article $product
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy($id): \Illuminate\Http\JsonResponse
     {
 
         $Article = Article::findOrFail($id);
-        if($Article) {
+        if ($Article) {
             Storage::delete('public/meuble/' . $Article->image);
             $Article->delete();
-        }
-        else
+        } else
             return response()->json("eureur");
         return response()->json(null);
     }
+
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Article  $product
+     * @param \App\Models\Article $product
      * @return \Illuminate\Http\JsonResponse
      */
     public function removeAll(Request $request): \Illuminate\Http\JsonResponse
     {
-        $data=$request->input(["data"]);
+        $data = $request->input(["data"]);
 
-        $d=[];
-        foreach ($data as $id){
-            $d[]=Article::findOrFail($id);
+        $d = [];
+        foreach ($data as $id) {
+            $d[] = Article::findOrFail($id);
         }
 
-        foreach ($d as $Article){
-            if($Article) {
+        foreach ($d as $Article) {
+            if ($Article) {
+                $stock = new Stock();
+                $stock->type = "delect";
+                $stock->identifiant = $Article->id;
+                $stock->user_id = 1;
+                $stock->save();
                 Storage::delete('public/meuble/' . $Article->image);
                 $Article->delete();
             }
         }
-            return response()->json("sucess");
+        return response()->json("sucess");
     }
 
 }
