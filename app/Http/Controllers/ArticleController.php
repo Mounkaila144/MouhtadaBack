@@ -196,6 +196,7 @@ class ArticleController extends Controller
             if ($Article) {
                 $stock = new Stock();
                 $stock->type = "delect";
+                $stock->nom = $Article->nom;
                 $stock->identifiant = $Article->id;
                 $stock->user_id = 1;
                 $stock->save();

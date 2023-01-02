@@ -18,6 +18,18 @@ class EntresortiController extends Controller
 
 
     }
+    public function retirer(Request $request ,Entresorti $products)
+    {
+        return $products
+            ->where('type', '=',0)
+            ->get();
+    }
+    public function ajouter(Request $request ,Entresorti $products)
+    {
+        return $products
+            ->where('type', '=',1)
+            ->get();
+    }
 
     /**
      * Store a newly created resource in storage.

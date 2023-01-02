@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Article;
 use App\Models\Facture;
 use App\Models\Vente;
@@ -20,6 +20,16 @@ class FactureController extends Controller
         return  Facture::all();
 
 
+    }
+    public function download(Request $request, $id)
+    {
+        $factures = Facture::find($id);
+        $contenue=json_decode($factures->contenue);
+        $total=0;
+        foreach ($contenue as$value){
+            $total+=$value->itemTotal;
+        }
+        return view('factures.facture',["factures"=>$factures,"contenue"=>$contenue,"total"=>$total]);
     }
 
     /**
@@ -40,13 +50,13 @@ class FactureController extends Controller
                     throw new Exception("Database error");
                 }
                 else{
-                    $article->update(["stock"=>$article->stock-$content["quantity"]]);
+                    $article->update(["stock"=>$article->stock-$content["quantity"],"vendue"=>$article->vendue+$content["quantity"]]);
                     $vente=new Vente();
                     $vente->nom=$article->nom;
                     $vente->identifiant=$article->id;
                     $vente->prixAchat=$article->prixAchat;
                     $vente->prixVente=$article->prixVente;
-                    $vente->quantite=$article->quantite;
+                    $vente->quantite=$content["quantity"];
                     $vente->user_id=$request->input(["user_id"]);
                     $vente->save();
                 }
@@ -74,18 +84,13 @@ class FactureController extends Controller
      */
     public function show($id)
     {
-        $vente= Facture::find($id);
-        $data[]=[
-            'contenue'=>json_decode($vente['contenue']),
-            'user_id'=>$vente['user_id'],
-            'nom'=>$vente['nom'],
-            'prenom'=>$vente['prenom'],
-            'adresse'=>$vente['adresse'],
-            'created_at'=>$vente['created_at'],
-            'updated_at'=>$vente['updated_at'],
-        ];
-
-        Return response()->json($data);
+        $factures = Facture::find($id);
+        $contenue=json_decode($factures->contenue);
+        $total=0;
+        foreach ($contenue as$value){
+            $total+=$value->itemTotal;
+        }
+        return view('factures.facture',["factures"=>$factures,"contenue"=>$contenue,"total"=>$total]);
     }
 
     /**

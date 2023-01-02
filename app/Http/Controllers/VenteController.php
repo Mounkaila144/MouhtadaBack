@@ -14,6 +14,11 @@ class VenteController extends Controller
      */
     public function index(Request $request ,Vente $products)
     {
+        if ($request->has("nom")) {
+            return $products
+                ->where('nom', 'LIKE', "%{$request->get("nom")}%")
+                ->get();
+        }
         return  Vente::all();
 
 
