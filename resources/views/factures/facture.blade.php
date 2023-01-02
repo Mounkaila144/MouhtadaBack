@@ -29,18 +29,17 @@
                         <div class="tm_grid_row tm_col_3">
                             <div>
                                 <b class="tm_primary_color">Email</b> <br>
-                                support@gmail.com <br>
-                                career@gmail.com
+                                maisonturque00@gmail.com <br>
                             </div>
                             <div>
-                                <b class="tm_primary_color">Phone</b> <br>
-                                +99-131-124-567 <br>
-                                Monday to Friday
+                                <b class="tm_primary_color">Contact</b> <br>
+                                +227 80 36 62 64 <br>
+                                Lundi au Vendredi
                             </div>
                             <div>
                                 <b class="tm_primary_color">Address</b> <br>
-                                9 Paul Street, London <br>
-                                England EC2A 4NE
+                                Francophonie sur la route de 100m à côté de <br>
+                                la station BM TRADING en face de la clinique TEMPS MODERNES.
                             </div>
                         </div>
                     </div>
