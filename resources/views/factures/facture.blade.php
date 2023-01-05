@@ -32,7 +32,7 @@
                                 maisonturque00@gmail.com <br>
                                 <b class="tm_primary_color">Contact</b> <br>
                                 +227 80 36 62 64 <br>
-                                Lundi au Vendredi
+                                Ouvert du Lundi au Samedi
                             </div>
                             <div style="margin-left: -60px">
                                 <b class="tm_primary_color">Address</b> <br>
@@ -163,14 +163,14 @@
           </span>
                 <span class="tm_btn_text">Imprimer</span>
             </a>
-            <button id="tm_return_btn" class="tm_invoice_btn tm_color2">
+            <a href="javascript:window.history.back()" class="tm_invoice_btn tm_color1">
           <span class="tm_btn_icon">
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M20 11H7.83L13.42 5.41L12 4L4 12L12 20L13.41 18.59L7.83 13H20V11Z" fill="#000"/>
 </svg>
           </span>
                 <span class="tm_btn_text">Retour Menu</span>
-            </button>
+            </a>
 
         </div>
     </div>
