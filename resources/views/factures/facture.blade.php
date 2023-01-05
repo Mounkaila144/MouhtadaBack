@@ -23,23 +23,21 @@
             <div class="tm_invoice_in">
                 <div class="tm_invoice_head tm_top_head tm_mb20">
                     <div class="tm_invoice_left">
-                        <div class="tm_logo"><img src="{{ asset('assets/img/logo.svg') }}" alt="Logo"></div>
+                        <div class="tm_logo"><img src="{{ asset('assets/img/logo.png') }}" style="width: 100px;height: 500px" alt="Logo"></div>
                     </div>
                     <div class="tm_invoice_right">
-                        <div class="tm_grid_row tm_col_3">
-                            <div>
+                        <div class="tm_grid_row tm_col_2">
+                            <div style="margin-right: 90px">
                                 <b class="tm_primary_color">Email</b> <br>
                                 maisonturque00@gmail.com <br>
-                            </div>
-                            <div>
                                 <b class="tm_primary_color">Contact</b> <br>
                                 +227 80 36 62 64 <br>
                                 Lundi au Vendredi
                             </div>
-                            <div>
+                            <div style="margin-left: -60px">
                                 <b class="tm_primary_color">Address</b> <br>
-                                Francophonie sur la route de 100m à côté de <br>
-                                la station BM TRADING en face de la clinique TEMPS MODERNES.
+                                Francophonie sur la route de 100m à côté de la station<br>
+                                 BM TRADING en face de la clinique TEMPS MODERNES.
                             </div>
                         </div>
                     </div>
@@ -105,12 +103,10 @@
                     </div>
                     <div class="tm_invoice_footer tm_mb15 tm_m0_md">
                         <div class="tm_left_footer">
-                            <div class="tm_card_note tm_ternary_bg tm_white_color"><b>Payment info: </b>Credit Card -
-                                236***********928
-                            </div>
-                            <p class="tm_mb2"><b class="tm_primary_color">Important Note:</b></p>
-                            <p class="tm_m0">Delivery dates are not guaranteed and Seller has <br>no liability for
-                                damages that may be incurred <br>due to any delay.</p>
+
+                            <p class="tm_mb2"><b class="tm_primary_color">Note importante : </b></p>
+                            <p class="tm_m0">les dates de livraison ne sont pas garanties <br
+                                >et le vendeur n'est pas responsable des dommages qui peuvent être causés <br>en raison de tout retard.</p>
                         </div>
                         <div class="tm_right_footer">
                             <table class="tm_mb15">
@@ -138,23 +134,12 @@
                             </table>
                         </div>
                     </div>
-                    <div class="tm_invoice_footer tm_type1">
-                        <div class="tm_left_footer"></div>
-                        <div class="tm_right_footer">
-                            <div class="tm_sign tm_text_center">
-                                <img src="{{ asset('assets/img/sign.svg') }}" alt="Sign">
-                                <p class="tm_m0 tm_ternary_color">Jhon Donate</p>
-                                <p class="tm_m0 tm_f16 tm_primary_color">Accounts Manager</p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <div class="tm_note tm_font_style_normal tm_text_center">
                     <hr class="tm_mb15">
                     <p class="tm_mb2"><b class="tm_primary_color">Terms & Conditions:</b></p>
-                    <p class="tm_m0">All claims relating to quantity or shipping errors shall be waived by Buyer unless
-                        made in writing to <br>Seller within thirty (30) days after delivery of goods to the address
-                        stated.</p>
+                    <p class="tm_m0">Toutes les revendications liées à des erreurs de quantité ou d'expédition seront renoncées par l'acheteur, sauf si elles sont faites par écrit à l'acheteur.
+                        <br>Le vendeur doit être informé par écrit des revendications dans les trente (30) jours suivant la livraison des marchandises à l'adresse indiquée.</p>
                 </div><!-- .tm_note -->
             </div>
         </div>
@@ -178,14 +163,6 @@
           </span>
                 <span class="tm_btn_text">Imprimer</span>
             </a>
-            <button id="tm_download_btn" class="tm_invoice_btn tm_color2">
-          <span class="tm_btn_icon">
-            <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512"><path
-                    d="M320 336h76c55 0 100-21.21 100-75.6s-53-73.47-96-75.6C391.11 99.74 329 48 256 48c-69 0-113.44 45.79-128 91.2-60 5.7-112 35.88-112 98.4S70 336 136 336h56M192 400.1l64 63.9 64-63.9M256 224v224.03"
-                    fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>
-          </span>
-                <span class="tm_btn_text">Facture N°#0{{{$content->id}}}</span>
-            </button>
             <button id="tm_return_btn" class="tm_invoice_btn tm_color2">
           <span class="tm_btn_icon">
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

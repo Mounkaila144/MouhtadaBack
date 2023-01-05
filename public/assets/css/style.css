@@ -1094,7 +1094,7 @@ ul {
 .tm_grid_row {
   display: -ms-grid;
   display: grid;
-  grid-gap: 10px 20px;
+  grid-gap: 10px 5px;
   list-style: none;
   padding: 0;
 }
@@ -1330,14 +1330,13 @@ hr {
 }
 
 .tm_invoice.tm_style2 .tm_invoice_left {
-  width: 30%;
   -webkit-box-flex: 0;
       -ms-flex: none;
           flex: none;
 }
 
 .tm_invoice.tm_style2 .tm_invoice_right {
-  width: 70%;
+  width: 100%;
   -webkit-box-flex: 0;
       -ms-flex: none;
           flex: none;
