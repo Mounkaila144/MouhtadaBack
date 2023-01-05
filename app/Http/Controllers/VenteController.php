@@ -77,20 +77,4 @@ class VenteController extends Controller
             return response()->json($product);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Vente  $product
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function destroy($id): \Illuminate\Http\JsonResponse
-    {
-        $Vente = Vente::findOrFail($id);
-        if($Vente)
-            $Vente->delete();
-        else
-            return response()->json("eureur");
-        return response()->json(null);
-    }
-
 }

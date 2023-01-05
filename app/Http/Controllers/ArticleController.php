@@ -24,6 +24,12 @@ class ArticleController extends Controller
                 ->where("stock", ">", 0)
                 ->get();
         }
+        if ($request->has("id")) {
+            return $products
+                ->where("categorie_id", "=", $request->get("id"))
+                ->get();
+        }
+
         return Article::orderBy('id', 'ASC')->get();
 
 
@@ -46,7 +52,7 @@ class ArticleController extends Controller
         ]);
         $imageName = time() . '.' . $request->file('image')->extension();
         // $request->image->move(public_path('images'), $imageName);
-        $request->file('image')->storeAs('public/meuble', $imageName);
+        $request->file('image')->storeAs('public/article', $imageName);
 
         $save = new Article();
         $save->image = $imageName;
@@ -55,7 +61,7 @@ class ArticleController extends Controller
         $save->prixVente = (int)$request->get('prixVente');
         $save->stock = (int)$request->get('stock');
         $save->vendue = 0;
-        $save->vendue = (int)$request->get('vendue');
+        $save->categorie_id = (int)$request->get('categorie_id');
         $save->save();
 
         return response()->json($save);
@@ -145,9 +151,9 @@ class ArticleController extends Controller
         $imageName = '';
         if ($request->hasFile('image')) {
             $imageName = time() . '.' . $request->file('image')->extension();
-            $request->file('image')->storeAs('public/meuble', $imageName);
+            $request->file('image')->storeAs('public/article', $imageName);
             if ($product->image) {
-                Storage::delete('public/meuble/' . $product->image);
+                Storage::delete('public/article/' . $product->image);
             }
             $data["image"] = $imageName;
         }
@@ -170,7 +176,7 @@ class ArticleController extends Controller
 
         $Article = Article::findOrFail($id);
         if ($Article) {
-            Storage::delete('public/meuble/' . $Article->image);
+            Storage::delete('public/article/' . $Article->image);
             $Article->delete();
         } else
             return response()->json("eureur");
@@ -200,7 +206,7 @@ class ArticleController extends Controller
                 $stock->identifiant = $Article->id;
                 $stock->user_id = 1;
                 $stock->save();
-                Storage::delete('public/meuble/' . $Article->image);
+                Storage::delete('public/article/' . $Article->image);
                 $Article->delete();
             }
         }

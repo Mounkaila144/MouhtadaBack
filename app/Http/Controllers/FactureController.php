@@ -80,7 +80,7 @@ class FactureController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Models\Facture  $product
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
     public function show($id)
     {
@@ -91,36 +91,6 @@ class FactureController extends Controller
             $total+=$value->itemTotal;
         }
         return view('factures.facture',["factures"=>$factures,"contenue"=>$contenue,"total"=>$total]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function update(Request $request,Facture $product)
-    {
-        $input=$request->all();
-        $product->update($input);
-        $product->save();
-            return response()->json($product);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Facture  $product
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function destroy($id): \Illuminate\Http\JsonResponse
-    {
-        $Facture = Facture::findOrFail($id);
-        if($Facture)
-            $Facture->delete();
-        else
-            return response()->json("eureur");
-        return response()->json(null);
     }
 
 }

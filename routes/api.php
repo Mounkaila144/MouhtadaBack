@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\AjouteController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\Dahboard;
 use App\Http\Controllers\EntresortiController;
 use App\Http\Controllers\FactureController;
@@ -22,28 +22,37 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/me', [AuthController::class, 'me'])->middleware('auth:sanctum');
-Route::post('articles/delect', [ArticleController::class, 'removeAll']);
-Route::post('articles/stocks/{id}', [ArticleController::class,"stocks"]);
-Route::get('factures/download/{id}', [FactureController::class,"download"]);
-Route::get('historique/add', [globale::class,"addStocks"]);
-Route::get('historique/remove', [globale::class,"removeStocks"]);
-Route::get('historique/prix', [globale::class,"prixStocks"]);
-Route::get('historique/delect', [globale::class,"delectStocks"]);
-Route::get('dahboard', [Dahboard::class,"TotalArticle"]);
-Route::get('entresorties/retirer', [EntresortiController::class,"retirer"]);
-Route::get('entresorties/ajouter', [EntresortiController::class,"ajouter"]);
-
-Route::middleware('api')->group(function () {
-    Route::resource('articles', ArticleController::class);
-    Route::resource('ajoutes', AjouteController::class);
+Route::group(['middleware' => 'permission'], function () {    // Toutes les routes de ce groupe nécessitent le rôle d'administrateur
+    Route::post('articles/delect', [ArticleController::class, 'removeAll']);
+    Route::post('articles/stocks/{id}', [ArticleController::class,"stocks"]);
+    Route::get('factures/download/{id}', [FactureController::class,"download"]);
+    Route::get('historique/add', [globale::class,"addStocks"]);
+    Route::get('historique/remove', [globale::class,"removeStocks"]);
+    Route::get('historique/prix', [globale::class,"prixStocks"]);
+    Route::get('historique/delect', [globale::class,"delectStocks"]);
+    Route::get('dahboard', [Dahboard::class,"TotalArticle"]);
+    Route::get('entresorties/retirer', [EntresortiController::class,"retirer"]);
+    Route::get('entresorties/ajouter', [EntresortiController::class,"ajouter"]);
     Route::resource('ventes', VenteController::class);
+    Route::resource('articles', ArticleController::class);
+    Route::resource('categories', CategorieController::class);
     Route::resource('factures', FactureController::class);
     Route::resource('entresorties', EntresortiController::class);
+
 });
+Route::group(['middleware' => 'permissionUser'], function () {
+    Route::get('dahboard', [Dahboard::class,"TotalArticle"]);
+    Route::get('articles', [ArticleController::class,"index"]);
+    Route::resource('ventes', VenteController::class);
+    Route::get('categories', [CategorieController::class,"index"]);
+    Route::resource('factures', FactureController::class);
+    Route::get('historique/add', [globale::class,"addStocks"]);
+    Route::get('historique/remove', [globale::class,"removeStocks"]);
+    Route::get('historique/prix', [globale::class,"prixStocks"]);
+    Route::get('historique/delect', [globale::class,"delectStocks"]);
+});
+Route::post('/login', [AuthController::class, 'login']);
+Route::resource('factures', FactureController::class);
+
+
+
