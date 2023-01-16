@@ -33,7 +33,6 @@ Route::group(['middleware' => 'permission'], function () {    // Toutes les rout
     Route::get('historique/delect', [globale::class,"delectStocks"]);
     Route::get('dahboard', [Dahboard::class,"TotalArticle"]);
     Route::get('entresorties/retirer', [EntresortiController::class,"retirer"]);
-    Route::get('entresorties/ajouter', [EntresortiController::class,"ajouter"]);
     Route::resource('ventes', VenteController::class);
     Route::resource('articles', ArticleController::class);
     Route::resource('categories', CategorieController::class);
@@ -46,6 +45,7 @@ Route::group(['middleware' => 'permission'], function () {    // Toutes les rout
 
 });
 Route::group(['middleware' => 'permissionUser'], function () {
+    Route::get('entresorties/retirer', [EntresortiController::class,"retirer"]);
     Route::post('reservations/payer/{id}', [ReservationController::class,"payer"]);
     Route::post('reservations/vente/{id}', [ReservationController::class,"vente"]);
     Route::resource('reservations', ReservationController::class);
