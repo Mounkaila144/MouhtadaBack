@@ -5,7 +5,7 @@ use App\Models\Facture;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Article;
 use App\Models\Reservation;
-use App\Models\Vente;
+use App\Models\Ventereservation;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -20,9 +20,7 @@ class ReservationController extends Controller
     public function index(Request $request, Reservation $products)
     {
         $products = $products->newQuery();
-        return $products
-            ->where("vendue", "=", false)
-            ->get();
+        return $products->get();
 
 
     }
@@ -36,52 +34,6 @@ class ReservationController extends Controller
         }
         $rest = $total - (int)$reservation->payer;
         return view('reservation.facture',["reservation"=>$reservation,"contenue"=>$contenue,"total"=>$total,"rest"=>$rest,"payer"=>$reservation->payer]);
-    }
-
-
-    public function vente($id)
-    {
-
-        $reservations = Reservation::find($id);
-        if ($reservations->vendue === 0) {
-            //calcule du total de la reservation
-            $contenue = json_decode($reservations->contenue);
-            $total = 0;
-            foreach ($contenue as $value) {
-                $total += (int)$value->itemTotal;
-            }
-            $rest = $total - (int)$reservations->payer;
-            if ($rest === 0) {
-                $save = new Facture();
-                $save->nom = $reservations->nom;
-                $save->prenom = $reservations->prenom;
-                $save->adresse = $reservations->adresse;
-                $save->contenue = $reservations->contenue;
-                $save->user_id = (int)$reservations->user_id;
-                $save->save();
-                foreach ($contenue as $content) {
-                    $article = Article::findOrFail($content->id);
-                    $article->update([ "vendue" => $article->vendue + $content->quantity]);
-
-                    $vente = new Vente();
-                    $vente->nom = $article->nom;
-                    $vente->identifiant=$save->id;
-                    $vente->prixAchat = $article->prixAchat;
-                    $vente->prixVente = $article->prixVente;
-                    $vente->quantite = $content->quantity;
-                    $vente->user_id = $reservations->user_id;
-                    $vente->save();
-                }
-
-                $reservations->update(["vendue"=>true]);
-                return response()->json($reservations);
-
-
-            }
-
-        } else {
-            throw new Exception("Deja vendu");
-        }
     }
 
     function payer(Request $request, $id)
@@ -128,6 +80,16 @@ class ReservationController extends Controller
                 throw new Exception("Database error");
             } else {
                 $article->update(["stock" => $article->stock - $content->quantity]);
+                $article->update([ "vendue" => $article->vendue + $content->quantity]);
+
+                $vente = new Ventereservation();
+                $vente->nom = $article->nom;
+                $vente->identifiant=$save->id;
+                $vente->prixAchat = $article->prixAchat;
+                $vente->prixVente = $article->prixVente;
+                $vente->quantite = $content->quantity;
+                $vente->user_id = $save->user_id;
+                $vente->save();
             }
         }
 
@@ -156,8 +118,9 @@ class ReservationController extends Controller
                 $contenue = json_decode($reservation->contenue);
                 foreach ($contenue as $content) {
                     $article = Article::find($content->id);
-                    $article===null?null:$article->update(["stock" => $article->stock + $content->quantity]);
+                    $article===null?null:$article->update(["stock" => $article->stock + $content->quantity,"vendue" => $article->vendue - $content->quantity]);
                 }
+                Ventereservation::where("identifiant",$reservation->id)->delete();
                 $reservation->delete();
             } else {
                 return response()->json("eureur");
