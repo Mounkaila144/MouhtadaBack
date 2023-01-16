@@ -7,6 +7,7 @@ use App\Http\Controllers\Dahboard;
 use App\Http\Controllers\EntresortiController;
 use App\Http\Controllers\FactureController;
 use App\Http\Controllers\globale;
+use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\VenteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -38,9 +39,16 @@ Route::group(['middleware' => 'permission'], function () {    // Toutes les rout
     Route::resource('categories', CategorieController::class);
     Route::resource('factures', FactureController::class);
     Route::resource('entresorties', EntresortiController::class);
+    Route::resource('reservations', ReservationController::class);
+    Route::post('reservations/payer/{id}', [ReservationController::class,"payer"]);
+    Route::post('reservations/vente/{id}', [ReservationController::class,"vente"]);
+
 
 });
 Route::group(['middleware' => 'permissionUser'], function () {
+    Route::post('reservations/payer/{id}', [ReservationController::class,"payer"]);
+    Route::post('reservations/vente/{id}', [ReservationController::class,"vente"]);
+    Route::resource('reservations', ReservationController::class);
     Route::get('dahboard', [Dahboard::class,"TotalArticle"]);
     Route::get('articles', [ArticleController::class,"index"]);
     Route::resource('ventes', VenteController::class);
@@ -53,6 +61,7 @@ Route::group(['middleware' => 'permissionUser'], function () {
 });
 Route::post('/login', [AuthController::class, 'login']);
 Route::resource('factures', FactureController::class);
+
 
 
 

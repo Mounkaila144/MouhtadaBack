@@ -41,6 +41,13 @@ class FactureController extends Controller
      */
     public function store(Request $request)
     {
+        $save = new Facture();
+        $save->nom =$request->input(["nom"]);
+        $save->prenom =$request->input(["prenom"]);
+        $save->adresse =$request->input(["adresse"]);
+        $save->contenue =json_encode($request->input(["contenue"]));
+        $save->user_id =(int)$request->get('user_id');
+        $save->save();
         if ($request->has("contenue")){
             $contenue =$request->input(["contenue"]);
             $v=[];
@@ -53,7 +60,7 @@ class FactureController extends Controller
                     $article->update(["stock"=>$article->stock-$content["quantity"],"vendue"=>$article->vendue+$content["quantity"]]);
                     $vente=new Vente();
                     $vente->nom=$article->nom;
-                    $vente->identifiant=$article->id;
+                    $vente->identifiant=$save->id;
                     $vente->prixAchat=$article->prixAchat;
                     $vente->prixVente=$article->prixVente;
                     $vente->quantite=$content["quantity"];
@@ -65,13 +72,7 @@ class FactureController extends Controller
         }else{
             Return response()->json("404");
         }
-        $save = new Facture();
-        $save->nom =$request->input(["nom"]);
-        $save->prenom =$request->input(["prenom"]);
-        $save->adresse =$request->input(["adresse"]);
-        $save->contenue =json_encode($request->input(["contenue"]));
-        $save->user_id =(int)$request->get('user_id');
-        $save->save();
+
 
         Return response()->json($save);
     }
@@ -92,5 +93,31 @@ class FactureController extends Controller
         }
         return view('factures.facture',["factures"=>$factures,"contenue"=>$contenue,"total"=>$total]);
     }
+    public function destroy(Request $request): \Illuminate\Http\JsonResponse
+    {
+
+        $data = $request->input(["data"]);
+        $d = [];
+        foreach ($data as $id) {
+            $d[] = Facture::findOrFail($id);
+        }
+
+        foreach ($d as $facture) {
+            if ($facture) {
+                $contenue = json_decode($facture->contenue);
+                foreach ($contenue as $content) {
+                    $article = Article::find($content->id);
+                    $article===null?null:$article->update(["stock" => $article->stock + $content->quantity,"vendue" => $article->vendue - $content->quantity]);
+                }
+
+                Vente::where("identifiant",$facture->id)->delete();
+                $facture->delete();
+            } else {
+                return response()->json("eureur");
+            }
+        }
+        return response()->json("sucess");
+    }
+
 
 }
