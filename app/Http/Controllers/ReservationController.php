@@ -26,6 +26,18 @@ class ReservationController extends Controller
 
 
     }
+    public function show($id)
+    {
+        $reservation = Reservation::find($id);
+        $contenue=json_decode($reservation->contenue);
+        $total=0;
+        foreach ($contenue as$value){
+            $total+=$value->itemTotal;
+        }
+        $rest = $total - (int)$reservation->payer;
+        return view('reservation.facture',["reservation"=>$reservation,"contenue"=>$contenue,"total"=>$total,"rest"=>$rest,"payer"=>$reservation->payer]);
+    }
+
 
     public function vente($id)
     {
@@ -129,16 +141,6 @@ class ReservationController extends Controller
      * @param \App\Models\Reservation $product
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function show($id)
-    {
-        $factures = Reservation::find($id);
-        $contenue = json_decode($factures->contenue);
-        $total = 0;
-        foreach ($contenue as $value) {
-            $total += $value->itemTotal;
-        }
-        return view('factures.facture', ["factures" => $factures, "contenue" => $contenue, "total" => $total]);
-    }
 
     public function destroy(Request $request): \Illuminate\Http\JsonResponse
     {
