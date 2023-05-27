@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('nom');
             $table->string('prenom');
             $table->string('adresse');
+            $table->integer('dimunie')->nullable();
             $table->json('contenue');
             $table->foreignIdFor(User::class);
             $table->timestamps();

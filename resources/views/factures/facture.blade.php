@@ -117,16 +117,17 @@
                                         CFA
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0">Tax</td>
-                                    <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0">00 CFA
-                                    </td>
-                                </tr>
+                                @unless($factures->dimunie == 0)
+                                    <tr>
+                                        <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0">Réduction</td>
+                                        <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0">{{$factures->dimunie}}CFA</td>
+                                    </tr>
+                                @endunless
                                 <tr>
                                     <td class="tm_width_3 tm_border_top_0 tm_bold tm_f16 tm_white_color tm_accent_bg tm_radius_6_0_0_6">
                                         Somme Total
                                     </td>
-                                    <td class="tm_width_3 tm_border_top_0 tm_bold tm_f16 tm_primary_color tm_text_right tm_white_color tm_accent_bg tm_radius_0_6_6_0">{{$total}}
+                                    <td class="tm_width_3 tm_border_top_0 tm_bold tm_f16 tm_primary_color tm_text_right tm_white_color tm_accent_bg tm_radius_0_6_6_0">{{$total-$factures->dimunie}}
                                         CFA
                                     </td>
                                 </tr>

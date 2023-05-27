@@ -13,6 +13,7 @@ class Facture extends Model
         'prenom',
         'adresse',
         'contenue',
+        'dimunie',
         'user_id'
     ];
 }

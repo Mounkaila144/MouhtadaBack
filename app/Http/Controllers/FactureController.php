@@ -41,13 +41,28 @@ class FactureController extends Controller
      */
     public function store(Request $request)
     {
-        $save = new Facture();
-        $save->nom =$request->input(["nom"]);
-        $save->prenom =$request->input(["prenom"]);
-        $save->adresse =$request->input(["adresse"]);
-        $save->contenue =json_encode($request->input(["contenue"]));
-        $save->user_id =(int)$request->get('user_id');
-        $save->save();
+        $contenue = $request->input(["contenue"]);
+        $total = 0;
+
+        foreach ($contenue as $value) {
+            $total += $value['itemTotal'];
+        }
+
+        $dimunie = (int) $request->input(["dimunie"]);
+
+        if ($dimunie <= $total) {
+            $save = new Facture();
+            $save->nom = $request->input(["nom"]);
+            $save->dimunie = $dimunie;
+            $save->prenom = $request->input(["prenom"]);
+            $save->adresse = $request->input(["adresse"]);
+            $save->contenue = json_encode($request->input(["contenue"]));
+            $save->user_id = (int) $request->get('user_id');
+            $save->save();
+        } else {
+            throw new Exception("La valeur de 'dimunie' ne peut pas être supérieure à la valeur totale.");
+        }
+
         if ($request->has("contenue")){
             $contenue =$request->input(["contenue"]);
             $v=[];

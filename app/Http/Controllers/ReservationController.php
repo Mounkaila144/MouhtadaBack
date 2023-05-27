@@ -64,10 +64,20 @@ class ReservationController extends Controller
     public function store(Request $request)
     {
 
+        $contenue = $request->input(["contenue"]);
+        $total = 0;
+
+        foreach ($contenue as $value) {
+            $total += $value['itemTotal'];
+        }
+
+        $dimunie = (int) $request->input(["dimunie"]);
+
         $save = new Reservation();
         $save->nom = $request->input(["nom"]);
         $save->vendue =false;
         $save->prenom = $request->input(["prenom"]);
+        $save->dimunie = $dimunie;
         $save->adresse = $request->input(["adresse"]);
         $save->payer = (int)$request->input(["payer"]);
         $save->contenue = json_encode($request->input(["contenue"]));

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('prenom');
             $table->string('adresse');
             $table->json('contenue');
+            $table->integer('dimunie')->nullable();
             $table->integer('payer');
             $table->boolean('vendue');
             $table->foreignIdFor(User::class);
