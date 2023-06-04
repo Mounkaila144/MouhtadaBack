@@ -45,9 +45,12 @@ class ReservationController extends Controller
         foreach ($contenue as $value) {
             $total += (int)$value->itemTotal;
         }
-        $rest = $total - (int)$reservations->payer;
-        if ($request->input(["payer"]) <= $rest) {
+        $rest = $total - (int)$reservations->payer- (int)$reservations->dimunie;
+        if ($request->input(["payer"]) <= $rest && $rest -$request->input(["payer"])>=0) {
             $reservations->update(["payer" => $reservations->payer + $request->input(["payer"])]);
+            if ($rest === $request->input(["payer"])) {
+                $reservations->update(["vendue" => true]);
+            }
             return response()->json("payer");
         } else {
             throw new Exception("Database error");
@@ -79,6 +82,7 @@ class ReservationController extends Controller
         $save->prenom = $request->input(["prenom"]);
         $save->dimunie = $dimunie;
         $save->adresse = $request->input(["adresse"]);
+        $save->numero = $request->input(["numero"]);
         $save->payer = (int)$request->input(["payer"]);
         $save->contenue = json_encode($request->input(["contenue"]));
         $save->user_id = (int)$request->get('user_id');

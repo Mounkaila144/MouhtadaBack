@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="Laralink">
     <!-- Site Title -->
-    <title>General Purpose Reservation-2</title>
+    <title>Reservation</title>
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 </head>
 
@@ -47,7 +47,7 @@
                         <p class="tm_mb2"><b>Reservation de:</b></p>
                         <p>
                             <b class="tm_f16 tm_primary_color">{{$reservation->nom}}</b> <br>
-                            {{$reservation->prenom}} <br>{{$reservation->adresse}} <br>
+                            {{$reservation->prenom}} <br>{{$reservation->adresse}} <br>{{$reservation->numero}}
                             <br>
                         </p>
                     </div>
@@ -58,12 +58,8 @@
                         </div>
                         <div class="tm_grid_row tm_col_3 tm_invoice_info_in tm_accent_bg">
                             <div>
-                                <span class="tm_white_color_60">Somme Total payer:</span> <br>
-                                <b class="tm_f16 tm_white_color">{{$payer}} CFA</b>
-                            </div>
-                             <div>
-                                <span class="tm_white_color_60">Somme Restant:</span> <br>
-                                <b class="tm_f16 tm_white_color">{{$rest}} CFA</b>
+                                <span class="tm_white_color_60">Total</span> <br>
+                                <b class="tm_f16 tm_white_color">{{$total}} CFA</b>
                             </div>
 
                             <div>
@@ -84,7 +80,7 @@
                                 <thead>
                                 <tr>
                                     <th class="tm_width_1 tm_semi_bold tm_accent_color">N°</th>
-                                    <th class="tm_width_5 tm_semi_bold tm_accent_color">Nom du meubles</th>
+                                    <th class="tm_width_5 tm_semi_bold tm_accent_color">Nom</th>
                                     <th class="tm_width_3 tm_semi_bold tm_accent_color">Prix</th>
                                     <th class="tm_width_2 tm_semi_bold tm_accent_color">Quantité</th>
                                     <th class="tm_width_7 tm_semi_bold tm_accent_color "> Total</th>
@@ -117,24 +113,30 @@
                             <table class="tm_mb15">
                                 <tbody>
                                 <tr>
-                                    <td class="tm_width_3 tm_primary_color tm_border_none tm_bold">Subtotal</td>
+                                    <td class="tm_width_3 tm_primary_color tm_border_none tm_bold">Total</td>
                                     <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_bold">{{$total}}
                                         CFA
                                     </td>
                                 </tr>
+                                @unless($reservation->dimunie == 0)
+                                    <tr>
+                                        <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0">Réduction</td>
+                                        <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0">{{$reservation->dimunie}}CFA</td>
+                                    </tr>
+                                @endunless
                                 <tr>
-                                    <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0">Tax</td>
-                                    <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0">00 CFA
+                                    <td class="tm_width_3 tm_border_top_0 tm_bold tm_f12 tm_white_color tm_accent_bg tm_radius_6_0_0_6">
+                                        Versement Total
+                                    </td>
+                                    <td class="tm_width_3 tm_border_top_0 tm_bold tm_f16 tm_primary_color tm_text_right tm_white_color tm_accent_bg tm_radius_0_6_6_0">{{$reservation->payer}} CFA
+
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="tm_width_3 tm_border_top_0 tm_bold tm_f16 tm_white_color tm_accent_bg tm_radius_6_0_0_6">
-                                        Somme Total
-                                    </td>
-                                    <td class="tm_width_3 tm_border_top_0 tm_bold tm_f16 tm_primary_color tm_text_right tm_white_color tm_accent_bg tm_radius_0_6_6_0">{{$total}}
-                                        CFA
-                                    </td>
+                                    <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0">Restant</td>
+                                    <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0">{{$total-$reservation->dimunie-$reservation->payer}} CFA</td>
                                 </tr>
+
                                 </tbody>
                             </table>
                         </div>

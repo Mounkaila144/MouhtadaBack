@@ -47,7 +47,7 @@
                         <p class="tm_mb2"><b>Facture A:</b></p>
                         <p>
                             <b class="tm_f16 tm_primary_color">{{$factures->nom}}</b> <br>
-                            {{$factures->prenom}} <br>{{$factures->adresse}} <br>
+                            {{$factures->prenom}} <br>{{$factures->adresse}} <br>{{$factures->numero}}
                             <br>
                         </p>
                     </div>
@@ -58,7 +58,7 @@
                         </div>
                         <div class="tm_grid_row tm_col_3 tm_invoice_info_in tm_accent_bg">
                             <div>
-                                <span class="tm_white_color_60">Somme Total:</span> <br>
+                                <span class="tm_white_color_60">Total:</span> <br>
                                 <b class="tm_f16 tm_white_color">{{$total}} CFA</b>
                             </div>
                             <div>
@@ -79,7 +79,7 @@
                                 <thead>
                                 <tr>
                                     <th class="tm_width_1 tm_semi_bold tm_accent_color">N°</th>
-                                    <th class="tm_width_5 tm_semi_bold tm_accent_color">Nom du meubles</th>
+                                    <th class="tm_width_5 tm_semi_bold tm_accent_color">Nom</th>
                                     <th class="tm_width_3 tm_semi_bold tm_accent_color">Prix</th>
                                     <th class="tm_width_2 tm_semi_bold tm_accent_color">Quantité</th>
                                     <th class="tm_width_7 tm_semi_bold tm_accent_color "> Total</th>

@@ -15,6 +15,7 @@ class Reservation extends Model
         'contenue',
         'vendue',
         'payer',
+        'numero',
         'user_id'
     ];
 }

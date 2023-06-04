@@ -54,6 +54,8 @@ class FactureController extends Controller
             $save = new Facture();
             $save->nom = $request->input(["nom"]);
             $save->dimunie = $dimunie;
+            $save->payer = $total-$dimunie;
+            $save->numero = $request->input(["numero"]);
             $save->prenom = $request->input(["prenom"]);
             $save->adresse = $request->input(["adresse"]);
             $save->contenue = json_encode($request->input(["contenue"]));
