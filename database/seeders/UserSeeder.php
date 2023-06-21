@@ -22,8 +22,8 @@ class UserSeeder extends Seeder
         $permission = Permission::create(['name' => 'delect']);
 
         $admin_role->givePermissionTo($permission);
-        $admin=User::create(["name"=>"Mouhtada","email"=>"mouhtada@gmail.com","password"=>bcrypt("Roi12345")]);
-        $user=User::create(["name"=>"Gerant","email"=>"gerant@gmail.com","password"=>bcrypt("Ger74740")]);
+        $admin=User::create(["name"=>"Mouhtada","email"=>"mouhtada@gmail.com","password"=>bcrypt("Roi12345"),"role"=>"admin"]);
+        $user=User::create(["name"=>"Gerant","email"=>"gerant@gmail.com","password"=>bcrypt("Ger74740"),"role"=>"client"]);
         $admin->assignRole($admin_role);
         $user->assignRole($user_role);
     }

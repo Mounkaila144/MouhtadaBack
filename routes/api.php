@@ -8,6 +8,7 @@ use App\Http\Controllers\EntresortiController;
 use App\Http\Controllers\FactureController;
 use App\Http\Controllers\globale;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\VenteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -37,15 +38,13 @@ Route::group(['middleware' => 'permission'], function () {    // Toutes les rout
     Route::resource('articles', ArticleController::class);
     Route::resource('categories', CategorieController::class);
     Route::resource('factures', FactureController::class);
-    Route::resource('entresorties', EntresortiController::class);
-    Route::post('reservations/payer/{id}', [ReservationController::class,"payer"]);
+    Route::resource('users', UserController::class);
     Route::post('reservations/vente/{id}', [ReservationController::class,"vente"]);
 
 
 });
 Route::group(['middleware' => 'permissionUser'], function () {
     Route::get('entresorties/retirer', [EntresortiController::class,"retirer"]);
-    Route::post('reservations/payer/{id}', [ReservationController::class,"payer"]);
     Route::post('reservations/vente/{id}', [ReservationController::class,"vente"]);
     Route::get('dahboard', [Dahboard::class,"TotalArticle"]);
     Route::get('articles', [ArticleController::class,"index"]);
@@ -57,9 +56,18 @@ Route::group(['middleware' => 'permissionUser'], function () {
     Route::get('historique/prix', [globale::class,"prixStocks"]);
     Route::get('historique/delect', [globale::class,"delectStocks"]);
 });
+
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/logout', [AuthController::class, 'logout']);
+Route::post('/refresh', [AuthController::class, 'refresh']);
+Route::get('/me', [AuthController::class, 'me']);
+Route::post('/adduser', [AuthController::class, 'register']);
 Route::resource('factures', FactureController::class);
 Route::resource('reservations', ReservationController::class);
+Route::post('reservations/payer/{id}', [ReservationController::class,"payer"]);
+Route::resource('users', UserController::class);
+
 
 
 
