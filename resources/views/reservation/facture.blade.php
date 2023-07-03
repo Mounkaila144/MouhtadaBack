@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="Laralink">
     <!-- Site Title -->
-    <title>Reservation</title>
+    <title>Commande</title>
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 </head>
 
@@ -29,9 +29,9 @@
                         <div class="tm_grid_row tm_col_2">
                             <div style="margin-right: 90px">
                                 <b class="tm_primary_color">Email</b> <br>
-                                maisonturque00@gmail.com <br>
+                                entreprice@gmail.com <br>
                                 <b class="tm_primary_color">Contact</b> <br>
-                                +227 80 36 62 64 <br>
+                                +227 00 000 000 <br>
                                 Ouvert du Lundi au Samedi
                             </div>
                             <div style="margin-left: -60px">
@@ -44,17 +44,17 @@
                 </div>
                 <div class="tm_invoice_info tm_mb10">
                     <div class="tm_invoice_info_left">
-                        <p class="tm_mb2"><b>Reservation de:</b></p>
+                        <p class="tm_mb2"><b>Commande de:</b></p>
                         <p>
-                            <b class="tm_f16 tm_primary_color">{{$reservation->nom}}</b> <br>
-                            {{$reservation->prenom}} <br>{{$reservation->adresse}} <br>{{$reservation->numero}}
+                            <b class="tm_f16 tm_primary_color">{{$order->name}}</b> <br>
+                            {{$order->lastname}} <br>{{$order->adresse}} <br>{{$order->phone}}
                             <br>
                         </p>
                     </div>
                     <div class="tm_invoice_info_right">
                         <div
                             class="tm_ternary_color tm_f50 tm_text_uppercase tm_text_center tm_invoice_title tm_mb15 tm_mobile_hide">
-                            Reservation
+                            Commande
                         </div>
                         <div class="tm_grid_row tm_col_3 tm_invoice_info_in tm_accent_bg">
                             <div>
@@ -63,12 +63,12 @@
                             </div>
 
                             <div>
-                                <span class="tm_white_color_60">Reservation Date:</span> <br>
+                                <span class="tm_white_color_60">Commande Date:</span> <br>
                                 <b class="tm_f16 tm_white_color">{{Carbon\Carbon::now()->format('d/m/Y')}}</b>
                             </div>
                             <div>
-                                <span class="tm_white_color_60">Reservation N°:</span> <br>
-                                <b class="tm_f16 tm_white_color">#0{{$reservation->id}}</b>
+                                <span class="tm_white_color_60">Commande N°:</span> <br>
+                                <b class="tm_f16 tm_white_color">#0{{$order->id}}</b>
                             </div>
                         </div>
                     </div>
@@ -91,7 +91,7 @@
                                     <tr>
                                         <td class="tm_width_1">{{$content->id}}</td>
                                         <td class="tm_width_2">
-                                            <p class="tm_m0 tm_f16 tm_primary_color">{{$content->nom}}</p>
+                                            <p class="tm_m0 tm_f16 tm_primary_color">{{$content->name}}</p>
                                         </td>
                                         <td class="tm_width_7">{{$content->price}} CFA</td>
                                         <td class="tm_width_2">{{$content->quantity}}</td>
@@ -118,25 +118,6 @@
                                         CFA
                                     </td>
                                 </tr>
-                                @unless($reservation->dimunie == 0)
-                                    <tr>
-                                        <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0">Réduction</td>
-                                        <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0">{{$reservation->dimunie}}CFA</td>
-                                    </tr>
-                                @endunless
-                                <tr>
-                                    <td class="tm_width_3 tm_border_top_0 tm_bold tm_f12 tm_white_color tm_accent_bg tm_radius_6_0_0_6">
-                                        Versement Total
-                                    </td>
-                                    <td class="tm_width_3 tm_border_top_0 tm_bold tm_f16 tm_primary_color tm_text_right tm_white_color tm_accent_bg tm_radius_0_6_6_0">{{$reservation->payer}} CFA
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="tm_width_3 tm_primary_color tm_border_none tm_pt0">Restant</td>
-                                    <td class="tm_width_3 tm_primary_color tm_text_right tm_border_none tm_pt0">{{$total-$reservation->dimunie-$reservation->payer}} CFA</td>
-                                </tr>
-
                                 </tbody>
                             </table>
                         </div>

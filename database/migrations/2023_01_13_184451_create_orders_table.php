@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Categorie;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,15 +14,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('articles', function (Blueprint $table) {
+        Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('nom');
-            $table->string('image');
-            $table->integer('prixAchat');
-            $table->integer('prixVente');
-            $table->integer('stock');
-            $table->integer('vendue');
-            $table->foreignIdFor(Categorie::class);
+            $table->string('name');
+            $table->string('lastname');
+            $table->string('adresse');
+            $table->json('data');
+            $table->boolean('state');
+            $table->string('phone');
+            $table->foreignIdFor(User::class);
             $table->timestamps();
         });
     }
@@ -34,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('articles');
+        Schema::dropIfExists('orders');
     }
 };

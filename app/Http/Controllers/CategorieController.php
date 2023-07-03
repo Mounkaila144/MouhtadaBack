@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Article;
+use App\Models\Product;
 use App\Models\Categorie;
 use App\Models\Stock;
 use Exception;
@@ -18,13 +18,7 @@ class CategorieController extends Controller
      */
     public function index(Request $request, Categorie $categories)
     {
-        $categories = $categories->newQuery();
-        if ($request->has("nom")) {
-            return $categories
-                ->where('nom', 'LIKE', "%{$request->get("nom")}%")
-                ->where("stock", ">", 0)
-                ->get();
-        }
+
         return Categorie::orderBy('id', 'ASC')->get();
 
 
@@ -39,16 +33,11 @@ class CategorieController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nom' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'name' => 'required',
         ]);
-        $imageName = time() . '.' . $request->file('image')->extension();
-        // $request->image->move(public_path('images'), $imageName);
-        $request->file('image')->storeAs('public/categorie', $imageName);
 
         $save = new Categorie();
-        $save->image = $imageName;
-        $save->nom = $request->input(["nom"]);
+        $save->name = $request->input(["name"]);
         $save->save();
 
         return response()->json($save);
@@ -77,17 +66,7 @@ class CategorieController extends Controller
     {
         $categorie = Categorie::findOrFail($id);
         $data = [];
-        $imageName = '';
-        if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->file('image')->extension();
-            $request->file('image')->storeAs('public/categorie', $imageName);
-            if ($categorie->image) {
-                Storage::delete('public/categorie/' . $categorie->image);
-            }
-            $data["image"] = $imageName;
-        }
-
-        $request->has('nom') ? $data["nom"] = $request->input(["nom"]) : null;
+        $request->has('name') ? $data["name"] = $request->input(["name"]) : null;
         $categorie->update($data);
         return response()->json($categorie);
     }
@@ -98,33 +77,33 @@ class CategorieController extends Controller
      * @param \App\Models\Categorie $categorie
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id,Article $article): \Illuminate\Http\JsonResponse
+    public function destroy($id, Request $request): \Illuminate\Http\JsonResponse
     {
+        $categorie = Categorie::findOrFail($id);
 
-        $Categorie = Categorie::findOrFail($id);
-        if ($Categorie) {
-            $Article=$article
-                ->where('categorie_id', '=', $Categorie->id)
-                ->get();
-            foreach ($Article as $value){
+        if ($categorie) {
+            $products = $categorie->products;
+
+            foreach ($products as $product) {
                 $stock = new Stock();
-                $stock->type = "delect";
-                $stock->nom = $value->nom;
-                $stock->identifiant = $value->id;
-                $stock->user_id = 1;
+                $stock->type = "delete";
+                $stock->nom = $product->name;
+                $stock->identifiant = $product->id;
+                $stock->users_id = (int)$request->input("user");
                 $stock->save();
-                Storage::delete('public/article/' . $value->image);
-                $value->delete();
+
+                Storage::delete('public/product/' . $product->picture);
+                $product->delete();
             }
 
-            Storage::delete('public/categorie/' . $Categorie->image);
-            $Categorie->delete();
+            $categorie->delete();
+        } else {
+            return response()->json("erreur");
+        }
 
-
-        } else
-            return response()->json("eureur");
         return response()->json(null);
     }
+
 
 
 }

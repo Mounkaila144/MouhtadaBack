@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Article;
+use App\Models\Categorie;
+use App\Models\Order;
+use App\Models\Product;
 use App\Models\Entresorti;
 use App\Models\Facture;
 use App\Models\Stock;
+use App\Models\Suplier;
+use App\Models\User;
 use App\Models\Vente;
 use App\Models\Ventereservation;
 use Illuminate\Http\Request;
@@ -16,100 +20,31 @@ class Dahboard extends Controller
 {
 
 
-    public function TotalArticle(Request $request, Article $article, Vente $vente, Entresorti $entresorti,Ventereservation $ventereservation)
+    public function TotalProduct(Request $request, Product $product, Vente $vente, Entresorti $entresorti,Ventereservation $ventereservation)
     {
         $data = [];
-        $data["TotalArticle"] = $article->count();
-        $data["articleVendue"] = $vente->count() +$ventereservation->count();
-        $pvav = (int)DB::table('factures')
-                ->select(DB::raw('SUM(payer) as sum'))->first()->sum +
-            (int)DB::table('reservations')
-                ->select(DB::raw('SUM(payer) as sum'))->first()->sum;
-        $pvavAnnee = (int)DB::table('factures')
-                ->select(DB::raw('SUM(payer) as sum'))
-                ->whereYear('created_at', '=', Carbon::now()->year)->first()->sum +
-            (int)DB::table('reservations')->select(DB::raw('SUM(payer) as sum'))
-                ->whereYear('created_at', '=', Carbon::now()->year)->first()->sum ;
-        $pvavJour =
-            (int)DB::table('factures')
-                ->select(DB::raw('SUM(payer) as sum'))
-                ->whereDate('created_at', '=', Carbon::today())->first()->sum +
-            (int)DB::table('reservations')
-                ->select(DB::raw('SUM(payer) as sum'))
-                ->whereDate('created_at', '=', Carbon::today())->first()->sum;
+        $data["TotalProduct"] = Product::count();
+        $data["TotalProductAlert"] = Product::whereColumn('alert', '>=', 'stock')->count(); // Get products where alert < stock
+        $data["TotalOrder"] = Order::count();
+        $data["TotalOrderFalse"] = Order::where('state', false)->count(); // Get count of orders with state false
+        $data["TotalOrderTrue"] = Order::where('state', true)->count();
+        $data["TotalUser"] = User::count();
+        $data["TotalCategorie"] = Categorie::count();
+        $data["TotalSuplier"] = Suplier::count();
+        $data["productVendue"] = $vente->count();
+        $data["productVendueJour"] =  (int)DB::table('ventes')
+                ->select(DB::raw('SUM(price) as sum'))
+                ->whereDate('created_at', '=', Carbon::today())->first()->sum ;
 
-        $pvavMoi = (int)DB::table('factures')
-                ->select(DB::raw('SUM(payer) as sum'))
-                ->whereMonth('created_at', '=', Carbon::now()->month)->first()->sum +
-            (int)DB::table('reservations')
-                ->select(DB::raw('SUM(payer) as sum'))
+        $data["productVendueMoi"] = (int)DB::table('ventes')
+                ->select(DB::raw('SUM(price) as sum'))
                 ->whereMonth('created_at', '=', Carbon::now()->month)->first()->sum;
-        $paav = (int)DB::table('ventes')
-                ->select(DB::raw('SUM(prixAchat*quantite) as sum'))
-                ->first()
-                ->sum +
-            (int)DB::table('ventereservations')
-                ->select(DB::raw('SUM(prixAchat*quantite) as sum'))->first()->sum;
-        $paavAnnee = (int)DB::table('ventes')
-                ->select(DB::raw('SUM(prixAchat*quantite) as sum'))
-                ->whereYear('created_at', '=', Carbon::now()->year)
-                ->first()
-                ->sum +
-            (int)DB::table('ventereservations')
-                ->select(DB::raw('SUM(prixAchat*quantite) as sum'))
-                ->whereYear('created_at', '=', Carbon::now()->year)->first()->sum;
-        $paavJour = (int)DB::table('ventes')
-                ->select(DB::raw('SUM(prixAchat*quantite) as sum'))
-                ->whereDate('created_at', '=', Carbon::today())->first()->sum +
-            (int)DB::table('ventereservations')
-                ->select(DB::raw('SUM(prixAchat*quantite) as sum'))
-                ->whereDate('created_at', '=', Carbon::today())->first()->sum;
-        $paavMoi = (int)DB::table('ventes')
-                ->select(DB::raw('SUM(prixAchat*quantite) as sum'))
-                ->whereMonth('created_at', '=', Carbon::now()->month)->first()->sum +
-            (int)DB::table('ventereservations')
-                ->select(DB::raw('SUM(prixAchat*quantite) as sum'))
-                ->whereMonth('created_at', '=', Carbon::now()->month)->first()->sum;
-        $retirer = (int)DB::table('entresortis')
-            ->select(DB::raw('SUM(prix) as sum'))
-            ->where('type', '=', 0)->first()->sum;
-        $retirerMoi = (int)DB::table('entresortis')
-            ->select(DB::raw('SUM(prix) as sum'))
-            ->where('type', '=', 0)
-            ->whereMonth('created_at', '=', Carbon::now()->month)->first()->sum;
-        $retirerAnnee = (int)DB::table('entresortis')
-            ->select(DB::raw('SUM(prix) as sum'))
-            ->where('type', '=', 0)
-            ->whereYear('created_at', '=', Carbon::now()->year)->first()->sum;
-        $ajouter = (int)DB::table('entresortis')
-            ->select(DB::raw('SUM(prix) as sum'))
-            ->where('type', '=', 1)->first()->sum;
-        $ajouterMoi = (int)DB::table('entresortis')
-            ->select(DB::raw('SUM(prix) as sum'))
-            ->where('type', '=', 1)
-            ->whereMonth('created_at', '=', Carbon::now()->month)->first()->sum;
-        $ajouterAnnee = (int)DB::table('entresortis')
-            ->select(DB::raw('SUM(prix) as sum'))
-            ->where('type', '=', 1)
-            ->whereYear('created_at', '=', Carbon::now()->year)->first()->sum;
-        $data["recet"] = $pvav;
-        $data["recetJour"] = $pvavJour;
-        $data["recetMoi"] = $pvavMoi;
-        $data["recetAnnee"] = $pvavAnnee;
-        $data["prixAchatArticleVendue"] = $paav;
-        $data["benefice"] = $pvav - $paav;
-        $data["beneficeAnnee"] = $pvavAnnee - $paavAnnee;
-        $data["beneficeMoi"] = $pvavMoi - $paavMoi;
-        $data["beneficeJour"] = $pvavJour - $paavJour;
-        $data["prixRetirer"] = $retirer;
-        $data["prixRetirerMoi"] = $retirerMoi;
-        $data["prixRetirerAnnee"] = $retirerAnnee;
-        $data["prixAjouter"] = $ajouter;
-        $data["prixAjouterMoi"] = $ajouterMoi;
-        $data["prixAjouterAnnee"] = $ajouterAnnee;
-        $data["caisse"] = $ajouter + $pvav - $retirer;
-//            ->select(DB::raw('SUM(column_name) as sum'))
-//            ->first();
+
+        $data["productVendueAnnee"] = (int)DB::table('ventes')
+                ->select(DB::raw('SUM(price) as sum'))
+                ->whereYear('created_at', '=', Carbon::now()->year)->first()->sum ;
+
+
         return $data;
     }
 

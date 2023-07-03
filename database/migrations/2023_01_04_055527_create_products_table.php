@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\User;
+use App\Models\Categorie;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,13 +14,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('ventes', function (Blueprint $table) {
+        Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->integer('identifiant');
             $table->string('name');
+            $table->string('picture');
             $table->integer('price');
-            $table->integer('quantity');
-            $table->foreignIdFor(User::class);
+            $table->unsignedBigInteger('categorie');
+            $table->foreign('categorie')->references('id')->on('categories');
+            $table->integer('suplier');
+            $table->integer('stock');
+            $table->integer('alert');
+            $table->integer('vendue');
             $table->timestamps();
         });
     }
@@ -32,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ventes');
+        Schema::dropIfExists('products');
     }
 };

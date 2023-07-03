@@ -7,14 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Stock extends Model
 {
-    use HasFactory;
     protected $fillable = [
         'type',
         'nom',
-        'prixAchat',
-        'prixVente',
+        'price',
         'quantite',
         'identifiant',
-        'user_id'
+        'users_id'
     ];
 }

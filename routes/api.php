@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\Dahboard;
@@ -8,6 +9,7 @@ use App\Http\Controllers\EntresortiController;
 use App\Http\Controllers\FactureController;
 use App\Http\Controllers\globale;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\SuplierController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VenteController;
 use Illuminate\Http\Request;
@@ -25,8 +27,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(['middleware' => 'permission'], function () {    // Toutes les routes de ce groupe nécessitent le rôle d'administrateur
-    Route::post('articles/delect', [ArticleController::class, 'removeAll']);
-    Route::post('articles/stocks/{id}', [ArticleController::class,"stocks"]);
+    Route::post('products/delect', [ProductController::class, 'removeAll']);
+    Route::post('products/stocks/{id}', [ProductController::class,"stocks"]);
     Route::get('factures/download/{id}', [FactureController::class,"download"]);
     Route::get('historique/add', [globale::class,"addStocks"]);
     Route::get('historique/remove', [globale::class,"removeStocks"]);
@@ -35,7 +37,7 @@ Route::group(['middleware' => 'permission'], function () {    // Toutes les rout
     Route::get('dahboard', [Dahboard::class,"TotalArticle"]);
     Route::get('entresorties/retirer', [EntresortiController::class,"retirer"]);
     Route::resource('ventes', VenteController::class);
-    Route::resource('articles', ArticleController::class);
+    Route::resource('products', ProductController::class);
     Route::resource('categories', CategorieController::class);
     Route::resource('factures', FactureController::class);
     Route::resource('users', UserController::class);
@@ -46,8 +48,8 @@ Route::group(['middleware' => 'permission'], function () {    // Toutes les rout
 Route::group(['middleware' => 'permissionUser'], function () {
     Route::get('entresorties/retirer', [EntresortiController::class,"retirer"]);
     Route::post('reservations/vente/{id}', [ReservationController::class,"vente"]);
-    Route::get('dahboard', [Dahboard::class,"TotalArticle"]);
-    Route::get('articles', [ArticleController::class,"index"]);
+    Route::get('dashboard', [Dahboard::class,"TotalArticle"]);
+    Route::get('products', [ProductController::class,"index"]);
     Route::resource('ventes', VenteController::class);
     Route::get('categories', [CategorieController::class,"index"]);
     Route::resource('factures', FactureController::class);
@@ -67,7 +69,13 @@ Route::resource('factures', FactureController::class);
 Route::resource('reservations', ReservationController::class);
 Route::post('reservations/payer/{id}', [ReservationController::class,"payer"]);
 Route::resource('users', UserController::class);
+Route::resource('supliers',SuplierController::class);
+Route::resource('categories', CategorieController::class);
 
+Route::resource('products', ProductController::class);
+Route::resource('orders', OrdersController::class);
+Route::post('orders/state/{id}', [OrdersController::class,"state"]);
+Route::get('dashboard', [Dahboard::class,"TotalProduct"]);
 
 
 
