@@ -17,9 +17,9 @@ return new class extends Migration
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
             $table->integer('identifiant');
-            $table->string('nom');
+            $table->string('name');
             $table->string('type');
-            $table->integer('quantite')->nullable();
+            $table->integer('quantity')->nullable();
             $table->integer('price')->nullable();
             $table->integer('users_id');
             $table->timestamps();

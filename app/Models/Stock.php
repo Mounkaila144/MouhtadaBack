@@ -9,9 +9,9 @@ class Stock extends Model
 {
     protected $fillable = [
         'type',
-        'nom',
+        'name',
         'price',
-        'quantite',
+        'quantity',
         'identifiant',
         'users_id'
     ];

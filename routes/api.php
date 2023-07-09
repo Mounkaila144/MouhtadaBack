@@ -76,7 +76,7 @@ Route::resource('products', ProductController::class);
 Route::resource('orders', OrdersController::class);
 Route::post('orders/state/{id}', [OrdersController::class,"state"]);
 Route::get('dashboard', [Dahboard::class,"TotalProduct"]);
-
+Route::post('/products/{productId}/picture', [ProductController::class, 'updateProductPicture']);
 
 
 

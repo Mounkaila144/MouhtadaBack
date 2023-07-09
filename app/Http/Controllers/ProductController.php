@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Stock;
 use Exception;
+use Intervention\Image\Facades\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -23,6 +24,10 @@ class ProductController extends Controller
                 ->where("categorie", "=", $request->get("categorie"))
                 ->get();
         }
+        elseif ($request->has("alert")){
+           $data= Product::whereColumn('alert', '>=', 'stock')->get();
+           dd($data);
+        }
 
         return Product::orderBy('id', 'ASC')
             ->with('categorie','suplier') // Chargement de la relation "categorie" avec uniquement la colonne "name"
@@ -37,21 +42,40 @@ class ProductController extends Controller
      * @param Request $r
      * @return \Illuminate\Http\JsonResponse
      */
+
     public function store(Request $request)
     {
+        $request->validate([
+            'picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'name' => 'required',
+            'price' => 'required|numeric',
+            'alert' => 'required|numeric',
+            'categorie' => 'required|numeric',
+            'stock' => 'required|numeric',
+            'suplier' => 'required|numeric',
+        ]);
 
-        $pictureName = time() . '.' . $request->file('picture')->extension();
-        // $request->picture->move(public_path('pictures'), $pictureName);
-        $request->file('picture')->storeAs('public/product', $pictureName);
+        $pictureName = time() . '.' . $request->file('picture')->getClientOriginalExtension();
+
+        // Compress the image before storing
+        $compressedImage = Image::make($request->file('picture'))
+            ->resize(800, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            })
+            ->encode('jpg', 75);
+
+        // Store the compressed image
+        Storage::put('public/product/' . $pictureName, $compressedImage);
 
         $save = new Product();
         $save->picture = $pictureName;
-        $save->name = $request->input(["name"]);
-        $save->price = (int)$request->get('price');
-        $save->alert = (int)$request->get('alert');
-        $save->categorie = (int)$request->get('categorie');
-        $save->stock = (int)$request->get('stock');
-        $save->suplier = (int)$request->get('suplier');
+        $save->name = $request->input('name');
+        $save->price = (int) $request->input('price');
+        $save->alert = (int) $request->input('alert');
+        $save->categorie = (int) $request->input('categorie');
+        $save->stock = (int) $request->input('stock');
+        $save->suplier = (int) $request->input('suplier');
         $save->vendue = 0;
         $save->save();
 
@@ -71,57 +95,41 @@ class ProductController extends Controller
         return response()->json($Product);
     }
 
-    public function stocks($id, Request $request)
+
+    public function updateProductPicture(Request $request, $productId)
     {
-        $Product = Product::find($id);
-        if ($request->has('add')) {
-            if ($request->input(["add"]) > 0) {
-                $Product->update(["stock" => $Product->stock + $request->input(["add"])]);
-                $stock = new Stock();
-                $stock->type = "add";
-                $stock->identifiant = $Product->id;
-                $stock->quantite = $request->input(["add"]);
-                $stock->name = $Product->name;
-                $stock->user_id = $request->input(["user"]);
-                $stock->save();
-                return response()->json($Product);
-            } else {
-                throw new Exception("Database error");
-            }
-        } else if ($request->has('remove')) {
-            if ($request->input(["remove"]) > 0 and $Product->stock >= $request->input(["remove"])) {
-                $Product->update(["stock" => $Product->stock - $request->input(["remove"])]);
-                $stock = new Stock();
-                $stock->type = "remove";
-                $stock->identifiant = $Product->id;
-                $stock->quantite = $request->input(["remove"]);
-                $stock->name = $Product->name;
-                $stock->user_id = $request->input(["user"]);
-                $stock->save();
-                return response()->json($Product);
-            } else {
-                throw new Exception("Database error");
-            }
-        } else if ($request->has('price') and $request->has('categorie')) {
-            if ($request->input(["price"]) >=0 and $request->input(["categorie"])>=0) {
-                $Product->update(["price" => $request->input(["price"]),"categorie" => $request->input(["categorie"])]);
-                $stock = new Stock();
-                $stock->type = "prix";
-                $stock->identifiant = $Product->id;
-                $stock->name = $Product->name;
-                $stock->price = $request->input(["price"]);
-                $stock->categorie = $request->input(["categorie"]);
-                $stock->user_id = $request->input(["user"]);
-                $stock->save();
-                return response()->json($Product);
-            } else {
-                throw new Exception("Database error");
-            }
-        } else {
-            throw new Exception("Database error");
+        // Validate the incoming request
+        $request->validate([
+            'picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        // Retrieve the product
+        $product = Product::findOrFail($productId);
+
+        // Delete the previous picture if it exists
+        if ($product->picture) {
+            Storage::delete('public/product/' . $product->picture);
         }
 
+        // Upload and store the new picture
+        $pictureName = time() . '.' . $request->file('picture')->getClientOriginalExtension();
 
+        // Compress the image before saving
+        $compressedImage = Image::make($request->file('picture'))
+            ->resize(800, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            })
+            ->encode('jpg', 75);
+
+        // Save the compressed image
+        Storage::put('public/product/' . $pictureName, $compressedImage);
+
+        // Update the product with the new picture name
+        $product->picture = $pictureName;
+        $product->save();
+
+        return response()->json(['message' => "Product picture updated successfully"]);
     }
 
     /**
@@ -135,20 +143,57 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         $data = [];
         $pictureName = '';
-        if ($request->hasFile('picture')) {
-            $pictureName = time() . '.' . $request->file('picture')->extension();
-            $request->file('picture')->storeAs('public/product', $pictureName);
-            if ($product->picture) {
-                Storage::delete('public/product/' . $product->picture);
+
+        if ($request->has('stock')) {
+            if ($request->input(["stock"]) > 0 && $product->stock<$request->input(["stock"])) {
+                $product->update(["stock" => $product->stock + $request->input(["stock"])]);
+                $stock = new Stock();
+                $stock->type = "add";
+                $stock->identifiant = $product->id;
+                $stock->quantity = $request->input(["stock"]);
+                $stock->name = $product->name;
+                $stock->users_id = $request->input(["user"]);
+                $stock->save();
+                return response()->json($product);
             }
-            $data["picture"] = $pictureName;
+           else if ($request->input(["stock"]) > 0 and $product->stock > $request->input(["stock"])) {
+                $product->update(["stock" => $product->stock - $request->input(["stock"])]);
+                $stock = new Stock();
+                $stock->type = "remove";
+                $stock->identifiant = $product->id;
+                $stock->quantity = $request->input(["stock"]);
+                $stock->name = $product->name;
+                $stock->users_id = $request->input(["user"]);
+                $stock->save();
+                return response()->json($product);
+            }
+           else if ($product->stock = $request->input(["stock"])) {
+
+           }
+           else {
+                throw new Exception("Database error");
+            }
+        }
+        if ($request->has('price')) {
+            if ($request->input(["price"]) >=0) {
+                $product->update(["price" => $request->input(["price"])]);
+                $stock = new Stock();
+                $stock->type = "prix";
+                $stock->identifiant = $product->id;
+                $stock->name = $product->name;
+                $stock->price = $request->input(["price"]);
+                $stock->users_id = $request->input(["user"]);
+                $stock->save();
+            }
+            else {
+                throw new Exception("Database error");
+            }
         }
 
         $request->has('name') ? $data["name"] = $request->input(["name"]) : null;
         $request->has('categorie') ? $data['categorie'] = $request->input(["categorie"]) : null;
-        $request->has('price') ? $data['price'] = $request->input(["price"]) : null;
         $request->has('suplier') ? $data['suplier'] = $request->input(["suplier"]) : null;
-        $request->has('alert') ? $data['alert'] = $request->input(["alert"]) : null;
+        $request->has('alert') ? $data['alert'] = (int)$request->input(["alert"]) : null;
         $product->update($data);
         return response()->json($product);
     }
@@ -159,17 +204,17 @@ class ProductController extends Controller
      * @param \App\Models\Product $product
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id): \Illuminate\Http\JsonResponse
-    {
-
-        $Product = Product::findOrFail($id);
-        if ($Product) {
-            Storage::delete('public/product/' . $Product->picture);
-            $Product->delete();
-        } else
-            return response()->json("eureur");
-        return response()->json(null);
-    }
+//    public function destroy($id): \Illuminate\Http\JsonResponse
+//    {
+//
+//        $Product = Product::findOrFail($id);
+//        if ($Product) {
+//            Storage::delete('public/product/' . $Product->picture);
+//            $Product->delete();
+//        } else
+//            return response()->json("eureur");
+//        return response()->json(null);
+//    }
 
     /**
      * Remove the specified resource from storage.
@@ -177,7 +222,7 @@ class ProductController extends Controller
      * @param \App\Models\Product $product
      * @return \Illuminate\Http\JsonResponse
      */
-    public function removeAll(Request $request): \Illuminate\Http\JsonResponse
+    public function destroy(Request $request): \Illuminate\Http\JsonResponse
     {
         $data = $request->input(["data"]);
 
@@ -192,7 +237,7 @@ class ProductController extends Controller
                 $stock->type = "delect";
                 $stock->name = $Product->name;
                 $stock->identifiant = $Product->id;
-                $stock->user_id = $request->input(["user"]);
+                $stock->users_id = (int)$request->input(["user"]);
                 $stock->save();
                 Storage::delete('public/product/' . $Product->picture);
                 $Product->delete();

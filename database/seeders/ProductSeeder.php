@@ -22,7 +22,7 @@ class ProductSeeder extends Seeder
         $categoryIds = Categorie::pluck('id')->all();
 
         // Create 100 products
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 3; $i++) {
             Product::create([
                 'name' => $faker->word,
                 'picture' => $faker->imageUrl(),
